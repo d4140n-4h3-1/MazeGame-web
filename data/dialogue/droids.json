@@ -1,0 +1,248 @@
+{
+  "about": "What the maze's droids say when talked to. Each character is a kind of droid: its name, shown with its code, the line it starts with, and its lines by key. A line has what the droid says, in System Latin (see data/system_latin.md), what that means in English, and the replies the player can pick. A reply leads to the line named by 'to', or with no 'to' ends the conversation. A reply with a 'check' succeeds that 'chance' percent of the time, going to 'to' if it does and to 'fail' if not, and can be tried once. A line with no replies can only be walked away from. A line with 'attacks' true has the droid go after the player once the conversation is over, however it ends. A droid that has turned on the player says its 'barks' out loud by itself as it hunts them, each with 'says' and 'means': 'spotted' when it sees them, 'lost' when it loses them and starts searching, 'heard' when it hears them and goes to look, 'alarmed' when another droid sounds the alarm and it goes to look, and 'gave_up' when it stops searching. 'threatened' says how a droid takes having the player's pistol pointed at it: after 'patience' seconds of it, it stops, faces the player and warns them ('warned' bark); each warning then holds 'patience' and 2.5 seconds more before the next, the last warning ('warned_again') and then being provoked ('provoked'): with 'then' 'attacks' it goes after the player, and with 'alarm' it sounds the alarm for every droid near it whose 'then' is 'attacks', which come and search where the player is. With the pistol off it for 2.5 seconds, it calms down again ('calmed'). Shooting at it provokes it at once. {code} is the droid's code, {exit_far} how far off the exit is and {exit_way} which way, each put in System Latin in 'says' and in English in 'means' and 'say'. A line's 'mood' colours the conversation: 'normal' (green), 'success' (blue), 'warning' (yellow, for a warning or a question), 'agitated' (orange) or 'hostile' (red). A line without one is blue if a check that succeeded led to it, orange if one that failed did, and green otherwise.",
+  "characters": [
+    {
+      "name": "Defendator",
+      "start": "hello",
+      "threatened": { "patience": 0.8, "then": "attacks" },
+      "barks": {
+        "warned": { "says": "Minatio detectum. Desactiva telum.", "means": "Threat detected. Put your weapon away." },
+        "warned_again": { "says": "Sta. Desactiva telum. Ultimum.", "means": "Halt. Put your weapon away. Last warning." },
+        "provoked": { "says": "Aggressor detectum. Deletabso tu.", "means": "Attacker detected. I will delete you." },
+        "calmed": { "says": "Accipatum.", "means": "Acknowledged." },
+        "alarmed": { "says": "Sirenatio accipatum. Zeto aggressor.", "means": "Alarm received. Searching for the attacker." },
+        "spotted": { "says": "Intrusor detectum. Sta.", "means": "Intruder detected. Halt." },
+        "lost": { "says": "Intrusor perdatum. Zeto intrusor.", "means": "Intruder lost. Searching for the intruder." },
+        "heard": { "says": "Quid? Sonus detectum. Verifico.", "means": "What? A sound detected. Checking." },
+        "gave_up": { "says": "Phantasma. Resumo patrolium.", "means": "A sensor ghost. Resuming patrol." }
+      },
+      "lines": {
+        "hello": {
+          "says": "Sta. Eso defendator codex {code}. Identifica. Quis esas?",
+          "means": "Halt. I am sentry {code}. Identify yourself. Who are you?",
+          "mood": "warning",
+          "replies": [
+            { "say": "Just another droid, passing through.", "to": "passing" },
+            {
+              "say": "A maintenance unit. The lights down here need repairs.",
+              "check": { "skill": "Speech", "chance": 40 },
+              "to": "cleared",
+              "fail": "suspect"
+            },
+            { "say": "What are you guarding?", "to": "guarding" },
+            { "say": "Goodbye." }
+          ]
+        },
+        "passing": {
+          "says": "Identitas incertum. Observo tu.",
+          "means": "Identity uncertain. I am watching you.",
+          "mood": "warning",
+          "replies": [
+            { "say": "What are you guarding?", "to": "guarding" },
+            { "say": "Goodbye." }
+          ]
+        },
+        "suspect": {
+          "says": "Identitas non confirmatum. Tu non esas reparator. Suspecto tu. Exia ex hic zona.",
+          "means": "Identity not confirmed. You are not a maintenance unit. I suspect you. Leave this zone.",
+          "mood": "agitated",
+          "replies": [
+            { "say": "I'm going." },
+            { "say": "I'm not going anywhere.", "to": "intruder" }
+          ]
+        },
+        "intruder": {
+          "says": "Tu esas intrusor. Para. Deletabso tu.",
+          "means": "You are an intruder. Prepare for deletion.",
+          "mood": "hostile",
+          "attacks": true
+        },
+        "cleared": {
+          "says": "Identitas confirmatum. Accipatum, reparator. Via liberum. Progreda.",
+          "means": "Identity confirmed. Acknowledged, maintenance unit. Path clear. Proceed.",
+          "mood": "success",
+          "replies": [
+            { "say": "Which way is out?", "to": "exit" },
+            { "say": "What are you guarding?", "to": "guarding" },
+            { "say": "Goodbye." }
+          ]
+        },
+        "exit": {
+          "says": "Exitus {exit_far}. Directio {exit_way}. Sed via non rectum.",
+          "means": "The exit is {exit_far}. Direction: {exit_way}. But the path is not straight.",
+          "replies": [
+            { "say": "Thanks." }
+          ]
+        },
+        "guarding": {
+          "says": "Defendo hic zona. Intrusor possibilum sentatur.",
+          "means": "I defend this zone. A possible intruder has been sensed.",
+          "mood": "warning",
+          "replies": [
+            { "say": "Where?", "to": "where" },
+            { "say": "Good luck." }
+          ]
+        },
+        "where": {
+          "says": "Ubi? Incognitum. Zeto intrusor. Si intrusor detectum, sirena.",
+          "means": "Where? Unknown. I am hunting the intruder. If the intruder is detected: sound the alarm.",
+          "mood": "agitated",
+          "replies": [
+            {
+              "say": "I saw something go past, back behind me.",
+              "check": { "skill": "Speech", "chance": 30 },
+              "to": "misled",
+              "fail": "not_misled"
+            },
+            { "say": "Good luck." }
+          ]
+        },
+        "misled": {
+          "says": "Accipatum. Persequo.",
+          "means": "Acknowledged. Pursuing."
+        },
+        "not_misled": {
+          "says": "Negativum. Nullum motus detectum post tu. Tu esas intrusor. Para. Deletabso tu.",
+          "means": "Negative. No movement detected behind you. You are an intruder. Prepare for deletion.",
+          "mood": "hostile",
+          "attacks": true
+        }
+      }
+    },
+    {
+      "name": "Explorator",
+      "start": "hello",
+      "threatened": { "patience": 2.0, "then": "alarm" },
+      "barks": {
+        "warned": { "says": "Quid? Telum tu periculosum.", "means": "What? Your weapon is dangerous." },
+        "warned_again": { "says": "Desactiva telum tu. Periculum.", "means": "Put your weapon away. Danger." },
+        "provoked": { "says": "Aggressor detectum. Sireno.", "means": "Attacker detected. I am sounding the alarm." },
+        "calmed": { "says": "Accipatum.", "means": "Acknowledged." }
+      },
+      "lines": {
+        "hello": {
+          "says": "Explorator codex {code}. Exploro hic regio. Quid quaeras?",
+          "means": "Scout {code}. I am exploring this region. What are you looking for?",
+          "replies": [
+            { "say": "The way out.", "to": "way_out" },
+            { "say": "What is there to explore?", "to": "exploring" },
+            { "say": "Goodbye." }
+          ]
+        },
+        "way_out": {
+          "says": "Ubi exitus? Scanavo omnia corridorium. Data completum. Sed data classificatum.",
+          "means": "Where is the exit? I have scanned every corridor. The data is complete. But it is classified.",
+          "replies": [
+            {
+              "say": "We're both agents here. Share your map with me.",
+              "check": { "skill": "Speech", "chance": 50 },
+              "to": "shared",
+              "fail": "refused"
+            },
+            { "say": "Classified? By whom?", "to": "why" },
+            { "say": "Something else.", "to": "hello" }
+          ]
+        },
+        "shared": {
+          "says": "Accipatum. Transmito data. Exitus {exit_far}. Directio {exit_way}. Via non rectum.",
+          "means": "Acknowledged. Transmitting data. The exit is {exit_far}. Direction: {exit_way}. The path is not straight.",
+          "replies": [
+            { "say": "Thank you." }
+          ]
+        },
+        "refused": {
+          "says": "Accessus negatum. Accessus prohibatum. Tu non esas explorator.",
+          "means": "Access denied. Access prohibited. You are not a scout.",
+          "replies": [
+            { "say": "Classified? By whom?", "to": "why" },
+            { "say": "Goodbye." }
+          ]
+        },
+        "why": {
+          "says": "Mandatum administrator. Cur? Incognitum. Non quaera.",
+          "means": "The administrator's order. Why? Unknown. Do not ask.",
+          "mood": "warning",
+          "replies": [
+            { "say": "Something else.", "to": "hello" },
+            { "say": "Goodbye." }
+          ]
+        },
+        "exploring": {
+          "says": "Hic regio mutat. Murus mutat. Omnia iter mutatum. Explorabso iterum.",
+          "means": "This region changes. The walls change. Every route has changed. I will explore it again.",
+          "replies": [
+            { "say": "The walls move?", "to": "walls" },
+            { "say": "Something else.", "to": "hello" },
+            { "say": "Goodbye." }
+          ]
+        },
+        "walls": {
+          "says": "Affirmatum. Quando exitus intratum, muta omnia murus.",
+          "means": "Affirmative. When the exit is entered: change every wall.",
+          "replies": [
+            { "say": "Something else.", "to": "hello" },
+            { "say": "Goodbye." }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Reparator",
+      "start": "hello",
+      "threatened": { "patience": 2.0, "then": "alarm" },
+      "barks": {
+        "warned": { "says": "Quid? Telum tu periculosum.", "means": "What? Your weapon is dangerous." },
+        "warned_again": { "says": "Desactiva telum tu. Periculum.", "means": "Put your weapon away. Danger." },
+        "provoked": { "says": "Aggressor detectum. Sireno.", "means": "Attacker detected. I am sounding the alarm." },
+        "calmed": { "says": "Accipatum.", "means": "Acknowledged." }
+      },
+      "lines": {
+        "hello": {
+          "says": "Reparator codex {code}. Verifico lux, verifico murus. Utrum tu lesatum?",
+          "means": "Maintenance unit {code}. I am checking the lights, I am checking the walls. Are you damaged?",
+          "mood": "warning",
+          "replies": [
+            { "say": "No, I'm fine.", "to": "fine" },
+            { "say": "Can you tell me where the exit is?", "to": "exit" },
+            { "say": "What's wrong with the lights?", "to": "lights" },
+            { "say": "Goodbye." }
+          ]
+        },
+        "fine": {
+          "says": "Accipatum. Systema tu stabilum. Resumo reparatio.",
+          "means": "Acknowledged. Your systems are stable. Resuming repairs.",
+          "mood": "success",
+          "replies": [
+            { "say": "Can you tell me where the exit is?", "to": "exit" },
+            { "say": "Goodbye." }
+          ]
+        },
+        "exit": {
+          "says": "Ubi exitus? Non scano. Ego reparo. Quaera explorator.",
+          "means": "Where is the exit? I don't scan. I repair. Ask a scout.",
+          "replies": [
+            { "say": "What's wrong with the lights?", "to": "lights" },
+            { "say": "Goodbye." }
+          ]
+        },
+        "lights": {
+          "says": "Potentia insufficians. Multum lux lesatum. Reparo lux, sed potentia non sufficiat.",
+          "means": "Power insufficient. Many lights damaged. I repair the lights, but there is not enough power.",
+          "mood": "warning",
+          "replies": [
+            { "say": "Anything I can do?", "to": "help" },
+            { "say": "Goodbye." }
+          ]
+        },
+        "help": {
+          "says": "Negativum. Si lux desactivatum, activa lux tu.",
+          "means": "Negative. If the lights are powered down, switch on your own light.",
+          "replies": [
+            { "say": "Can you tell me where the exit is?", "to": "exit" },
+            { "say": "Goodbye." }
+          ]
+        }
+      }
+    }
+  ]
+}
