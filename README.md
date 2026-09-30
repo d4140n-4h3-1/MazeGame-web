@@ -1,6 +1,6 @@
-# Maze, in the browser
+# Ruptura Systematis, in the browser
 
-The web version of [Maze](https://github.com/d4140n-4h3-1/MazeGame), a first-person maze game in
+The web version of [Ruptura Systematis](https://github.com/d4140n-4h3-1/MazeGame), a first-person maze game in
 Rust on the Fyrox engine, compiled to WebAssembly and drawn with WebGL 2.
 
 **Play it at https://d4140n-4h3-1.github.io/MazeGame-web/**
